@@ -1,13 +1,13 @@
 class Aromatic:
-    smilesStr = "";
+    smilesStr = ""
 
     def __init__(self, smilesStr: str):
-        self.smilesStr = smilesStr;
+        self.smilesStr = smilesStr
 
     def isAromatic(self) -> bool:
-        #Current smilesStr must be correct SMILES sequense
+        # Current smilesStr must be correct SMILES sequenсe
         for c in self.smilesStr:
             if c.isalpha() and c.isupper():
-                return False;
+                return False
         else:
-            return True;
+            return True
