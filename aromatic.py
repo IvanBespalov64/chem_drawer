@@ -1,6 +1,6 @@
+
 from struct import Struct, Atom
 import atom_info as AtomInfo
-
 
 class Aromatic:
     smilesStr = ""
@@ -16,11 +16,10 @@ class Aromatic:
         else:
             return True
 
+    #It will return Struct of current compound
     def generate(self) -> Struct:
-
         if not self.isAromatic():
             return None
-
         __num_of_carbon = 0  # Number of carbon atoms
         __num_of_possible = 0  # Number of electron pairs, that cun be donored to congureated system
         for c in self.smilesStr:
@@ -28,5 +27,11 @@ class Aromatic:
                 continue
             if c == 'c':
                 __num_of_carbon += 1
-            if AtomInfo.getValentElctrons(Atom(c)) > 4:
-                __num_of_possible += (AtomInfo.getValentElctrons(Atom(c)) - 4)
+            else:
+                #Here we use tokenized smiles and calc num of free electron pairs
+                pass
+
+        return None;
+
+    def tokenize(self, list, pos, prev) -> list:
+        #Here we parse smiles str to list of atoms, that has tags
