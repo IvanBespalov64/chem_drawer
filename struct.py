@@ -4,8 +4,38 @@ class Atom:
     def __init__(self, type_):
         self.__type = type_
 
+    def __str__(self):
+        return self.__type
+
+    def __repr__(self):
+        return self.__type
+
     def getType(self) -> str:
         return self.__type
+
+class Bond:
+    __type = 0
+
+    def __init__(self, type_):
+        self.__type = type_
+
+    def getType(self):
+        return __type
+
+    def toChar(self):
+        if self.__type == 1:
+            return '-'
+        elif self.__type == 2:
+            return '='
+        else:
+            return '#'
+
+    def __str__(self):
+        return self.toChar()
+
+    def __repr__(self):
+        return self.toChar()
+
 
 class Struct:
 
