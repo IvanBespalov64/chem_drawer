@@ -4,10 +4,10 @@ import atom_info as AtomInfo
 import util_funcs as Utils
 
 class Aromatic(Compound):
-    smilesStr = ""
-    tokens = list()
 
     def __init__(self, smilesStr: str):
+        super().setSubtypeTag("AROMATIC");
+
         self.smilesStr = smilesStr
         self.tokens = self.tokenize()
 
@@ -18,7 +18,3 @@ class Aromatic(Compound):
                 return False
         else:
             return True
-
-    
-
-    
