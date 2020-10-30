@@ -54,6 +54,8 @@ class Struct:
         self.__data = dict()
         # This matrix for all pairs of atoms has the bond type value or 0 if there is no bond
         self.__bondMatrix = list()
+        # Better structure for containig graph for drawing
+        self.__adjacencyList = list()
         # Current num of atoms in struct
         self.__numOfAtoms = 0
 
@@ -73,6 +75,8 @@ class Struct:
             return False
         self.__bondMatrix[num1][num2] = bondType
         self.__bondMatrix[num2][num1] = bondType
+        self.__adjacencyList[num1].append(num2)
+        self.__adjacencyList[num2].append(num1)
         self.__numOfBonds[num1] += bondType
         self.__numOfBonds[num2] += bondType
         return True
@@ -84,9 +88,16 @@ class Struct:
         else:
             return 0
 
+
+    def getMatrixElement(self, x, y) -> int:
+        return self.__bondMatrix[x][y]
+
+    def getAdjacencyList(self, v) -> list:
+        return self.__adjacencyList[v]
+
     def printBonds(self):
         print(self.__numOfBonds)
 
     # Returns num of atoms
     def getSize(self) -> int:
-        return self.__numOfAtoms;
+        return self.__numOfAtoms

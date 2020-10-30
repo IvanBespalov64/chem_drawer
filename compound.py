@@ -1,4 +1,4 @@
-from struct import Struct, Atom, Bond, StructureElement
+from structure import Struct, Atom, Bond, StructureElement
 import util_funcs as Utils
 import atom_info as AtomInfo
 

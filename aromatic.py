@@ -1,5 +1,5 @@
 from compound import Compound
-from struct import Struct, Atom, Bond
+from structure import Struct, Atom, Bond
 import atom_info as AtomInfo
 import util_funcs as Utils
 

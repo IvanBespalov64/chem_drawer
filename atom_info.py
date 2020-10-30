@@ -1,4 +1,4 @@
-from struct import Atom
+from structure import Atom
 
 # For all atom names it will return num of valent electrons
 __atom_info = dict()
