@@ -1,4 +1,4 @@
-from structure import Struct, Atom, Bond
+from chem_drawer.structure import Struct, Atom, Bond
 
 #returns 0 if lower case and 1 if upper case
 def getCase(a) -> int:
