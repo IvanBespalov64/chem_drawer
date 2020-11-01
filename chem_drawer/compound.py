@@ -1,6 +1,6 @@
-from struct import Struct, Atom, Bond, StructureElement
-import util_funcs as Utils
-import atom_info as AtomInfo
+from chem_drawer.structure import Struct, Atom, Bond, StructureElement
+import chem_drawer.util_funcs as Utils
+import chem_drawer.atom_info as AtomInfo
 
 class Compound:
 
@@ -55,7 +55,8 @@ class Compound:
                         pos += 1
                     cycle_num = int(cycle_num_str)
                     cycles[cycle_num] = (last, max(1, cur_bond))
-                else:
+                    struct.cycles[last] = "START"
+                elif(self.__END_CYCLE_TAG in current_tag):
                     pos = current_tag.find(self.__END_CYCLE_TAG) \
                         + len(self.__END_CYCLE_TAG)
                     while(pos < len(current_tag) \
@@ -65,6 +66,7 @@ class Compound:
                     cycle_num = int(cycle_num_str)
                     struct.addBond(last, cycles[cycle_num][0], \
                                        cycles[cycle_num][1])
+                    struct.cycles[last] = "END"
         struct.printBonds()
         return struct
 

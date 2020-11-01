@@ -1,7 +1,7 @@
-from compound import Compound
-from struct import Struct, Atom, Bond
-import atom_info as AtomInfo
-import util_funcs as Utils
+from chem_drawer.compound import Compound
+from chem_drawer.structure import Struct, Atom, Bond
+import chem_drawer.atom_info as AtomInfo
+import chem_drawer.util_funcs as Utils
 
 class Aromatic(Compound):
 
