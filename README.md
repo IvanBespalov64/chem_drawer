@@ -24,7 +24,7 @@ Drawer().genImage(Compound("CC(=O)C").generate())
 1. Clone this repository for your computer:
 
 ```bash
-git clone https://github.com/IvanBespalov64/chem_drawe
+git clone https://github.com/IvanBespalov64/chem_drawer
 ```
 
 2. Run in shell:
