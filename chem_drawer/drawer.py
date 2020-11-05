@@ -25,7 +25,7 @@ class Drawer:
         self.atom_pos = dict()
 
     #This func wil draw our graph
-    def DepthFirstSearch(self, st : Struct, drawed, cur, pos, im : Image, p_k = 0):
+    def DepthFirstSearch(self, st : Struct, drawed, cur, pos, im : Image, numering_rule):
         self.atom_pos[cur] = pos
         #Updating size of molecule to correct drawing
         self.__min_x = min(self.__min_x, pos[0])
@@ -45,12 +45,24 @@ class Drawer:
         step = cur_degree
         cur_degree /= 2
         k = 1 - 2 * (len(drawed) % 2)
+
+        next_positions_temp = list()
+        next_positions = list()
         for u in st.getAdjacencyList(cur):
             if(not u in drawed):
-                new_pos = (pos[0] + self.__bondLength * \
+                next_positions.append((pos[0] + self.__bondLength * \
                     math.sin(math.radians(cur_degree)), \
                     pos[1] + self.__bondLength * \
-                    k * math.cos(math.radians(cur_degree)))
+                    k * math.cos(math.radians(cur_degree))))
+                cur_degree += step
+        rule = numering_rule(len(next_positions_temp))
+        for i in rule:
+            next_positions.append(next_positions_temp[i])
+        position_counter = 0
+        for u in st.getAdjacencyList(cur):
+            if(not u in drawed):
+                new_pos = next_positions[position_counter]
+                position_counter += 1
 
                 if(st.getMatrixElement(cur, u) == 1):
                     draw.line(pos + new_pos, fill = (0, 0, 0, 255), width = 3)
@@ -91,13 +103,16 @@ class Drawer:
                            new_pos[0] + x_, new_pos[1] - y_),\
                            fill = (0, 0, 0, 255), width = 2)
                     draw.line(pos + new_pos, fill = (0, 0, 0, 255), width = 3)
-
-                cur_degree += step
-                im = self.DepthFirstSearch(st, drawed, u, new_pos, im, k)
+                if(cur in st.cycles and st.cycles[cur] == "START"):
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, self.cycle_numering)
+                elif(cur in st.cycles and st.cycles[cur] == "END"):
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, self.default_numering)
+                else:
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, numering_rule)
 
             elif((cur in st.cycles) and (u in st.cycles) \
-                 and (st.cycles[cur] == "START") and \
-                 (st.cycles[u] == "END")):
+                 and (st.cycles[u] == "START") and \
+                 (st.cycles[cur] == "END")):
                 draw.line(pos + self.atom_pos[u], \
                           fill = (0, 0, 0, 255), width = 2)
 
@@ -116,10 +131,25 @@ class Drawer:
             st.adjacencyList[i].sort(key = lambda x: \
                                      len(st.adjacencyList[x]), reverse = True)
         t_im = self.DepthFirstSearch(st, dict(), 0, (200, 200), \
-                        Image.new('RGBA', (600, 400), (255, 255, 255, 0)))
+                        Image.new('RGBA', (2000, 1000), (255, 255, 255, 0)), self.default_numering)
         width = math.ceil(self.__max_x - self.__min_x)
         height = math.ceil(self.__max_y - self.__min_y)
 
         im = t_im.crop((self.__min_x - 10, self.__min_y - 10, \
                         self.__max_x + 10, self.__max_y + 10))
         im.show()
+
+
+    def default_numering(self, n : int):
+        ans = list()
+        for i in range(n):
+            ans.append(i)
+        return ans
+
+    def cycle_numering(self, n : int):
+        ans = list()
+        for i in range((n + 1) // 2):
+            ans.append(i)
+        for i in range(n // 2 - 1, -1, -1):
+            ans.append(i)
+        return ans

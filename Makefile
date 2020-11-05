@@ -10,3 +10,5 @@ install:
 
 clean:
 	rm -rf chem_drawer/__pycache__
+	rm -rf chem_drawer/*~
+	rm -rf *~

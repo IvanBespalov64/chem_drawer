@@ -37,3 +37,8 @@ def connectByDot(st1 : Struct, st2 : Struct, bond : Bond, first = -1, second = -
                 st1.addBond(prev_size + i, prev_size + j, \
                              st2._Struct__bondMatrix[i][j])
     return st1;
+
+def parseNumOfCycleFromTag(tag : str) -> int:
+    start = tag.find('CYCLE') + len('CYCLE')
+    end = max(len(tag), tag.find('_', start))
+    return int(tag[start:end])

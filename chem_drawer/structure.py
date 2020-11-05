@@ -4,6 +4,7 @@ class StructureElement:
 class Atom(StructureElement):
 
     def __init__(self, type_):
+        self.ind = 0
         self.__type = type_
 
     def __str__(self):
@@ -14,6 +15,9 @@ class Atom(StructureElement):
 
     def getType(self) -> str:
         return self.__type
+
+    def setInd(self, x : int):
+        self.ind = x
 
     def getFormattedType(self) -> str:
         return str(self.__type[0].capitalize())
@@ -67,8 +71,12 @@ class Struct:
         self.adjacencyList = [list() \
                                 for i in range(self.__MAX_NUM_OF_ATOMS)]
 
+
     # This function add new atom and return his num
     def addAtom(self, atom) -> int:
+
+        atom.setInd(self.__numOfAtoms)
+
         self.__data[self.__numOfAtoms] = atom
         self.__numOfBonds[self.__numOfAtoms] = 0
         self.__numOfAtoms += 1

@@ -1,3 +1,8 @@
+# Note!!!!!
+# It is important, that in tokens' list
+# All contains in lists, BUT tags joined
+# with Atoms in TUPLES
+
 from chem_drawer.structure import Struct, Atom, Bond, StructureElement
 import chem_drawer.util_funcs as Utils
 import chem_drawer.atom_info as AtomInfo
@@ -8,6 +13,10 @@ class Compound:
     __END_CYCLE_TAG = "END_OF_CYCLE"
 
     def __init__(self, smilesStr: str):
+
+        # List of cycles
+        self.cy_list = list()
+
         self.subtype_tag = ""
         self.smilesStr = smilesStr
         self.tokens = self.tokenize()
@@ -67,12 +76,62 @@ class Compound:
                     struct.addBond(last, cycles[cycle_num][0], \
                                        cycles[cycle_num][1])
                     struct.cycles[last] = "END"
-        struct.printBonds()
         return struct
 
-
+    # This func will build a graph that will in Struct
+    # Of current compound by a tokenized smiles string
     def generate(self) -> Struct:
-        return self.row_generate(Struct(), 0, 0, self.tokens, dict())
+        ans = self.row_generate(Struct(), 0, 0, self.tokens, dict())
+        self.find_cycles()
+        return ans
+
+    def row_find_cycles(self, cur_list, cur_token):
+        cycle_ends = dict()
+
+        for i in range(len(cur_token)):
+            token = cur_token[i]
+            if(len(token) != 2):
+                continue
+            if(isinstance(token[0], Atom) and isinstance(token[1], str)):
+                if('END' in token[1]):
+                    cycle_ends[Utils.parseNumOfCycleFromTag(token[1])] = i
+
+        startedCycles = list()
+        i = 0
+        while (i < len(cur_token)):
+            #print(cur_list)
+            token = cur_token[i]
+            # Max len of single info list - 2 (Atom + tag)
+            # if it > 2 -> sublist
+            if(len(token) > 2):
+                i += 1
+                self.row_find_cycles(list(), token)
+            if isinstance(token[0], Atom):
+                if(len(token) == 2 and isinstance(token[1], str)):
+                    if("START" in token[1]):
+                        if(len(startedCycles) != 0):
+                            self.row_find_cycles(list(), cur_token[i:(cycle_ends[Utils.parseNumOfCycleFromTag(token[1])] + 1)])
+                            cur_list.append(token[0].ind)
+                            cur_list.append(\
+                                cur_token[cycle_ends\
+                                [Utils.parseNumOfCycleFromTag(\
+                                token[1])]][0].ind)
+                            i = cycle_ends\
+                                [Utils.parseNumOfCycleFromTag(token[1])] + 1
+                            continue
+                        else:
+                            startedCycles.append( \
+                                  Utils.parseNumOfCycleFromTag(token[1]))
+                if(len(startedCycles) != 0):
+                    cur_list.append(token[0].ind)
+                if(len(token) == 2 and isinstance(token[1], str)):
+                    if("END" in token[1]):
+                        startedCycles.pop()
+            i += 1
+        self.cy_list.append(cur_list)
+
+    def find_cycles(self):
+        self.row_find_cycles(list(), self.tokens)
 
     #This func is row form of tokenizer
     def row_tokenize(self, lst, cycles, pos, end, connected = False) -> list:
