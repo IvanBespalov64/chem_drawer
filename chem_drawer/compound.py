@@ -1,6 +1,6 @@
 # Note!!!!!
 # It is important, that in tokens' list
-# All contains in lists, BUT tags joined
+# All data contains in lists, BUT tags joined
 # with Atoms in TUPLES
 
 from chem_drawer.structure import Struct, Atom, Bond, StructureElement
@@ -17,9 +17,14 @@ class Compound:
         # List of cycles
         self.cy_list = list()
 
+        # For every vertex in graph it will contain
+        # position of cycle in cy_list that contiain this vertex
+        self.vertex_cycles = dict()
+
         self.subtype_tag = ""
         self.smilesStr = smilesStr
         self.tokens = self.tokenize()
+
 
     def setSubtypeTag(self, subtypeTag : str):
         self.subtype_tag = subtypeTag
@@ -132,6 +137,13 @@ class Compound:
 
     def find_cycles(self):
         self.row_find_cycles(list(), self.tokens)
+        for i in range(len(self.cy_list)):
+            for vertex in self.cy_list[i]:
+                if(not vertex in self.vertex_cycles):
+                    self.vertex_cycles[vertex] = Utils.make_list(i)
+                else:
+                    self.vertex_cycles[vertex].append(i)
+
 
     #This func is row form of tokenizer
     def row_tokenize(self, lst, cycles, pos, end, connected = False) -> list:

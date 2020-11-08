@@ -25,7 +25,7 @@ class Drawer:
         self.atom_pos = dict()
 
     #This func wil draw our graph
-    def DepthFirstSearch(self, st : Struct, drawed, cur, pos, im : Image, numering_rule):
+    def DepthFirstSearch(self, st : Struct, drawed, cur, pos, im : Image):
         self.atom_pos[cur] = pos
         #Updating size of molecule to correct drawing
         self.__min_x = min(self.__min_x, pos[0])
@@ -46,7 +46,6 @@ class Drawer:
         cur_degree /= 2
         k = 1 - 2 * (len(drawed) % 2)
 
-        next_positions_temp = list()
         next_positions = list()
         for u in st.getAdjacencyList(cur):
             if(not u in drawed):
@@ -55,9 +54,6 @@ class Drawer:
                     pos[1] + self.__bondLength * \
                     k * math.cos(math.radians(cur_degree))))
                 cur_degree += step
-        rule = numering_rule(len(next_positions_temp))
-        for i in rule:
-            next_positions.append(next_positions_temp[i])
         position_counter = 0
         for u in st.getAdjacencyList(cur):
             if(not u in drawed):
@@ -104,11 +100,11 @@ class Drawer:
                            fill = (0, 0, 0, 255), width = 2)
                     draw.line(pos + new_pos, fill = (0, 0, 0, 255), width = 3)
                 if(cur in st.cycles and st.cycles[cur] == "START"):
-                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, self.cycle_numering)
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im)
                 elif(cur in st.cycles and st.cycles[cur] == "END"):
-                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, self.default_numering)
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im)
                 else:
-                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im, numering_rule)
+                    im = self.DepthFirstSearch(st, drawed, u, new_pos, im)
 
             elif((cur in st.cycles) and (u in st.cycles) \
                  and (st.cycles[u] == "START") and \
@@ -131,25 +127,10 @@ class Drawer:
             st.adjacencyList[i].sort(key = lambda x: \
                                      len(st.adjacencyList[x]), reverse = True)
         t_im = self.DepthFirstSearch(st, dict(), 0, (200, 200), \
-                        Image.new('RGBA', (2000, 1000), (255, 255, 255, 0)), self.default_numering)
+                        Image.new('RGBA', (2000, 1000), (255, 255, 255, 0)))
         width = math.ceil(self.__max_x - self.__min_x)
         height = math.ceil(self.__max_y - self.__min_y)
 
         im = t_im.crop((self.__min_x - 10, self.__min_y - 10, \
                         self.__max_x + 10, self.__max_y + 10))
         im.show()
-
-
-    def default_numering(self, n : int):
-        ans = list()
-        for i in range(n):
-            ans.append(i)
-        return ans
-
-    def cycle_numering(self, n : int):
-        ans = list()
-        for i in range((n + 1) // 2):
-            ans.append(i)
-        for i in range(n // 2 - 1, -1, -1):
-            ans.append(i)
-        return ans
