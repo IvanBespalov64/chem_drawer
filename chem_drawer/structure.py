@@ -62,6 +62,13 @@ class Struct:
         self.__bondMatrix = list()
         # Better structure for containig graph for drawing
         self.adjacencyList = list()
+        # List of cycles
+        self.cy_list = list()
+
+        # For every vertex in graph it will contain
+        # position of cycle in cy_list that contiain this vertex
+        self.vertex_cycles = dict()
+
         # Current num of atoms in struct
         self.__numOfAtoms = 0
 

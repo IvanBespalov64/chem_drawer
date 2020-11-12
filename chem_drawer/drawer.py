@@ -21,8 +21,11 @@ class Drawer:
         self.__min_x = 2000
         self.__min_y = 2000
 
-        #for all atoms will have their positions
+        # For all atoms will have their positions in plain
         self.atom_pos = dict()
+        # For all cycles will contain tuple of
+        # (current degree, step)
+        self.current_cdegree = dict()
 
     #This func wil draw our graph
     def DepthFirstSearch(self, st : Struct, drawed, cur, pos, im : Image):
@@ -46,19 +49,31 @@ class Drawer:
         cur_degree /= 2
         k = 1 - 2 * (len(drawed) % 2)
 
-        next_positions = list()
         for u in st.getAdjacencyList(cur):
             if(not u in drawed):
-                next_positions.append((pos[0] + self.__bondLength * \
+                new_pos = (pos[0] + self.__bondLength * \
                     math.sin(math.radians(cur_degree)), \
                     pos[1] + self.__bondLength * \
-                    k * math.cos(math.radians(cur_degree))))
+                    k * math.cos(math.radians(cur_degree)))
+
+                if(cur in st.vertex_cycles):
+                    cycle = -1
+                    for c in st.vertex_cycles[cur]:
+                        if(cur in st.cy_list[c] and u in st.cy_list[c]):
+                            cycle = c
+                            break
+                    if(cycle != -1):
+                        cur_cycle_degree, step = self.current_cdegree[c]
+                        print(cur_cycle_degree, step)
+                        new_pos = (pos[0] + self.__bondLength * \
+                                math.sin(math.radians(cur_cycle_degree)), \
+                                pos[1] + self.__bondLength * \
+                                math.cos(math.radians(cur_cycle_degree)))
+                        cur_cycle_degree -= step
+                        self.current_cdegree[c] = (cur_cycle_degree, step)
+
+
                 cur_degree += step
-        position_counter = 0
-        for u in st.getAdjacencyList(cur):
-            if(not u in drawed):
-                new_pos = next_positions[position_counter]
-                position_counter += 1
 
                 if(st.getMatrixElement(cur, u) == 1):
                     draw.line(pos + new_pos, fill = (0, 0, 0, 255), width = 3)
@@ -99,6 +114,8 @@ class Drawer:
                            new_pos[0] + x_, new_pos[1] - y_),\
                            fill = (0, 0, 0, 255), width = 2)
                     draw.line(pos + new_pos, fill = (0, 0, 0, 255), width = 3)
+
+
                 if(cur in st.cycles and st.cycles[cur] == "START"):
                     im = self.DepthFirstSearch(st, drawed, u, new_pos, im)
                 elif(cur in st.cycles and st.cycles[cur] == "END"):
@@ -109,6 +126,7 @@ class Drawer:
             elif((cur in st.cycles) and (u in st.cycles) \
                  and (st.cycles[u] == "START") and \
                  (st.cycles[cur] == "END")):
+                # !!! Here we will chek if u and cur in same cycles
                 draw.line(pos + self.atom_pos[u], \
                           fill = (0, 0, 0, 255), width = 2)
 
@@ -122,7 +140,17 @@ class Drawer:
         del draw
         return im
 
+    # Returns an image from struct
     def genImage (self, st : Struct) -> Image:
+
+        for i in range(len(st.cy_list)):
+            n = len(st.cy_list[i])
+            if(n == 0):
+                continue
+            alpha = (n - 2) * 180 / n
+            step = 180 - alpha
+            self.current_cdegree[i] = (alpha, step)
+
         for i in range(st.getSize()):
             st.adjacencyList[i].sort(key = lambda x: \
                                      len(st.adjacencyList[x]), reverse = True)

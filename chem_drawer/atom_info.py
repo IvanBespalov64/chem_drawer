@@ -8,7 +8,7 @@ __colors = {
     "s" : (0, 255, 0, 255),
     "h" : (255, 255, 255, 255),
     "b" : (255, 255, 0, 255),
-    "default" : (125, 125, 125, 255)
+    "default" : (125, 0, 125, 255)
 }
 
 def getValentElectrons(atom : Atom) -> int:

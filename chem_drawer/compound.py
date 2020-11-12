@@ -88,6 +88,8 @@ class Compound:
     def generate(self) -> Struct:
         ans = self.row_generate(Struct(), 0, 0, self.tokens, dict())
         self.find_cycles()
+        ans.cy_list = self.cy_list
+        ans.vertex_cycles = self.vertex_cycles
         return ans
 
     def row_find_cycles(self, cur_list, cur_token):
